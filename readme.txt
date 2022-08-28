@@ -19,3 +19,4 @@ C3TR C3Ghost C3HB C3RFEM C3STR C3x C3GC C3SPP C3C2 CTR3
 GhostCSPA GhostCSPB GhostCSPC GhostSPPCSPC GhostBottleneck DownC
 STCSPA STCSPB STCSPC SPPCSP ST2CSPA ST2CSPB ST2CSPC SPPCSPC SPPCSPTR
 efficient involution mobilenet hornet spd addcon cneb convnext replknet frem seam horblock implicit shffule vovcsp HorBlock CNeB ConvNextBlock RepVGGBlockv6 VoVCSP  ImplicitA ImplicitM 
+11更多评价指标 F1分数 map75 map95
