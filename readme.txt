@@ -1,18 +1,18 @@
-ĞŞ¸´ÁËYOLOv5µÄÒ»²¿·Öbug£¬²¢ÇÒ½øĞĞÁË´úÂëÇåÀíºÍ¸ñÊ½»¯
-Ô­Ê¼YOLOv5£º39´íÎó 1185¾¯¸æ 18275Èõ¾¯¸æ 37Óï·¨´íÎó 905Æ´Ğ´´íÎó
-YOLOY£º23´íÎó 492¾¯¸æ 1074Èõ¾¯¸æ 28Óï·¨´íÎó
+ä¿®å¤äº†YOLOv5çš„ä¸€éƒ¨åˆ†bugï¼Œå¹¶ä¸”è¿›è¡Œäº†ä»£ç æ¸…ç†å’Œæ ¼å¼åŒ–
+åŸå§‹YOLOv5ï¼š39é”™è¯¯ 1185è­¦å‘Š 18275å¼±è­¦å‘Š 37è¯­æ³•é”™è¯¯ 905æ‹¼å†™é”™è¯¯
+YOLOYï¼š23é”™è¯¯ 492è­¦å‘Š 1074å¼±è­¦å‘Š 28è¯­æ³•é”™è¯¯
 
-»ùÓÚÔ­Ê¼YOLOv5-6.2¼ÓÈëÁË´óÁ¿µÄ¸Ä½ø·½·¨£º
-1¸ü¶à¼¤»îº¯Êı30 Hard_Swish leaky_relu linspace gelu lrelu Hard_Sigmoid relu Squareplus selu elu sigmoid softmax softplus softsign step_function tanh SiLU Mish FReLU AconC MetaAconC celu glu hardshrink hardtanh prelu rrelu softmin softsign tanhshrink
-2¸ü¶àÊı¾İÔöÇ¿31 Í¨µÀ¶ªÆú ÏñËØ¶ªÆú CLAHE HE Ñ¹Ëõ ¾ùÖµÄ£ºı ÖĞÖµÄ£ºı ¸ßË¹Ä£ºı Àâ¾µÄ£ºı ÔË¶¯Ä£ºı ³¬ÏñËØ ÏÂ²ÉÑù ISOÔëÉù ¸ßË¹ÔëÉù ³ËĞÔÔëÉù ¸¡µñ Èñ»¯ ·ÇÈñ»¯ ¹ıÆØ Ëæ»úÁÁ¶È¶Ô±È¶È Ëæ»úÉ«µ÷ »Ò¶È»¯ ºÖÉ«»¯ Ëæ»úÙ¤Âê RGB±ä»» É«µ÷·ÖÀë Í¨µÀËæ»ú»¯ BCS±ä»» PCA±ä»» HSV±ä»» Ëæ»ú90¶ÈĞı×ª
-3¸ü¶à¾í»ı14 conv CrossConv DWConv Conv6 DepthWiseConv PointWiseConv ConvSig ConvSqu deconv simconv gnconv RepConv XBNConv ghostconv
-4¸ü¶à³Ø»¯6 simsppf spp aspp RFB sppcspc sppcspcgroup
-5¸ü¶à¼ì²âÍ·8 ASFF Decoupled IDetect IAuxDetect DetectX DetectYoloX IBin MT
-6¸ü¶àfpn6 bifpn affpn carafe panet elandpn
-7¸ü¶àlossº¯Êı19 focalloss Qfocalloss vfocalloss gfocalloss efocalloss giouloss diouloss ciouloss eiouloss siouloss aiouloss
-8¸ü¶àNMS19 Merge-NMS Soft-NMS CIoU_NMS DIoU_NMS GIoU_NMS EIoU_NMS SIoU_NMS Soft-SIoUNMS Soft-CIoUNMS Soft-DIoUNMS Soft-EIoUNMS Soft-GIoUNMS andNMS clusterNMS clusterdiouNMS clusterspmNMS clusterspmdistNMS clusterciouNMS clustereiouNMS
-9¸ü¶à×¢ÒâÁ¦17 GAM NAM S2 SE SU SAM SK CC CBAM CA GAM ECA SE BOT3 RESCBAM BOT ACMIX
-10¸ü¶àÖ÷¸É83
+åŸºäºåŸå§‹YOLOv5-6.2åŠ å…¥äº†å¤§é‡çš„æ”¹è¿›æ–¹æ³•ï¼š
+1æ›´å¤šæ¿€æ´»å‡½æ•° Hard_Swish leaky_relu linspace gelu lrelu Hard_Sigmoid relu Squareplus selu elu sigmoid softmax softplus softsign step_function tanh SiLU Mish FReLU AconC MetaAconC celu glu hardshrink hardtanh prelu rrelu softmin softsign tanhshrink
+2æ›´å¤šæ•°æ®å¢å¼º é€šé“ä¸¢å¼ƒ åƒç´ ä¸¢å¼ƒ CLAHE HE å‹ç¼© å‡å€¼æ¨¡ç³Š ä¸­å€¼æ¨¡ç³Š é«˜æ–¯æ¨¡ç³Š æ£±é•œæ¨¡ç³Š è¿åŠ¨æ¨¡ç³Š è¶…åƒç´  ä¸‹é‡‡æ · ISOå™ªå£° é«˜æ–¯å™ªå£° ä¹˜æ€§å™ªå£° æµ®é›• é”åŒ– éé”åŒ– è¿‡æ› éšæœºäº®åº¦å¯¹æ¯”åº¦ éšæœºè‰²è°ƒ ç°åº¦åŒ– è¤è‰²åŒ– éšæœºä¼½ç› RGBå˜æ¢ è‰²è°ƒåˆ†ç¦» é€šé“éšæœºåŒ– BCSå˜æ¢ PCAå˜æ¢ HSVå˜æ¢ éšæœº90åº¦æ—‹è½¬
+3æ›´å¤šå·ç§¯ conv CrossConv DWConv Conv6 DepthWiseConv PointWiseConv ConvSig ConvSqu deconv simconv gnconv RepConv XBNConv ghostconv
+4æ›´å¤šæ± åŒ– simsppf spp aspp RFB sppcspc sppcspcgroup
+5æ›´å¤šæ£€æµ‹å¤´ ASFF Decoupled IDetect IAuxDetect DetectX DetectYoloX IBin MT
+6æ›´å¤šfpn bifpn affpn carafe panet elandpn
+7æ›´å¤šlosså‡½æ•° focalloss Qfocalloss vfocalloss gfocalloss efocalloss giouloss diouloss ciouloss eiouloss siouloss aiouloss
+8æ›´å¤šNMS Merge-NMS Soft-NMS CIoU_NMS DIoU_NMS GIoU_NMS EIoU_NMS SIoU_NMS Soft-SIoUNMS Soft-CIoUNMS Soft-DIoUNMS Soft-EIoUNMS Soft-GIoUNMS andNMS clusterNMS clusterdiouNMS clusterspmNMS clusterspmdistNMS clusterciouNMS clustereiouNMS
+9æ›´å¤šæ³¨æ„åŠ› GAM NAM S2 SE SU SAM SK CC CBAM CA GAM ECA SE BOT3 RESCBAM BOT ACMIX
+10æ›´å¤šä¸»å¹²
 BottleneckCSP BottleneckCSPA BottleneckCSPB BottleneckCSPC BottleneckCSP2 BottleneckCSPF BottleneckG BottleneckCSPL BottleneckCSPLG BottleneckCSPSE BottleneckCSPSEA BottleneckCSPSAM BottleneckCSPSAMA  BottleneckCSPSAMB  BottleneckCSPGC  BottleneckCSPDNL BottleneckCSP2SAM InvolutionBottleneck BottleneckCSPTR BottleneckCSP2TR
 ResCSPA ResCSPB ResCSPC ResXCSPA ResXCSPB ResXCSPC RepResXCSPA RepResXCSPB RepResXCSPC RepRes RepResCSPA RepResCSPB RepResCSPC RepBottleneckCSPA RepBottleneckCSPB RepBottleneckCSPC 
 C3TR C3Ghost C3HB C3RFEM C3STR C3x C3GC C3SPP C3C2 CTR3
