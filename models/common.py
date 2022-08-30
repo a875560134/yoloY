@@ -6020,11 +6020,13 @@ class ES_Bottleneck(nn.Module):
 # enhance shuffle block end
 # -------------------------------------------------------------------------
 
+class DWConv(Conv):
+    """
+    """
 
-def DWConv(c1, c2, k=1, s=1, act=True):
-    # Depthwise convolution
-    return Conv(c1, c2, k, s, g=math.gcd(c1, c2), act=act)
-
+    # Depth-wise convolution class
+    def __init__(self, c1, c2, k=1, s=1, act=True):  # ch_in, ch_out, kernel, stride, padding, groups
+        super().__init__(c1, c2, k, s, g=math.gcd(c1, c2), act=act)
 
 def GroupNorm(num_features, num_groups=64, eps=1e-5, affine=True, *args, **kwargs):
     if num_groups > num_features:
