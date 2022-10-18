@@ -5498,7 +5498,8 @@ class Conv(nn.Module):
 
     def fuseforward(self, x):
         return self.act(self.conv(x))
-
+    def forward_fuse(self, x):
+        return self.act(self.conv(x))
 
 class C3_GC(nn.Module):
     # CSP Bottleneck with 3 convolutions
