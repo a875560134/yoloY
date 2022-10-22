@@ -61,6 +61,31 @@ import torch
 import torch.nn as nn
 
 
+# 此代码放于models/commons.py
+class ParNetAttention(nn.Module):
+
+    def __init__(self, channel=1024, out_channel=1024):
+        super().__init__()
+        self.sse = nn.Sequential(
+            nn.AdaptiveAvgPool2d(1),
+            nn.Conv2d(channel, out_channel, kernel_size=1),
+            nn.Sigmoid())
+        self.conv1x1 = nn.Sequential(
+            nn.Conv2d(channel, out_channel, kernel_size=1),
+            nn.BatchNorm2d(out_channel))
+        self.conv3x3 = nn.Sequential(
+            nn.Conv2d(channel, out_channel, kernel_size=3, padding=1),
+            nn.BatchNorm2d(out_channel))
+        self.silu = nn.SiLU()
+
+    def forward(self, x):
+        b, c, _, _ = x.size()
+        x1 = self.conv1x1(x)
+        x2 = self.conv3x3(x)
+        x3 = self.sse(x) * x
+        y = self.silu(x1 + x2 + x3)
+        return y
+
 class C3(nn.Module):
     # CSP Bottleneck with 3 convolutions
     def __init__(self, c1, c2, n=1, shortcut=True, g=1, e=0.5):  # ch_in, ch_out, number, shortcut, groups, expansion
