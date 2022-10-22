@@ -11,7 +11,7 @@ YOLOY：23错误 492警告 1074弱警告 28语法错误
 6更多fpn bifpn affpn carafe panet elandpn
 7更多loss函数 focalloss Qfocalloss vfocalloss gfocalloss efocalloss giouloss diouloss ciouloss eiouloss siouloss aiouloss
 8更多NMS Merge-NMS Soft-NMS CIoU_NMS DIoU_NMS GIoU_NMS EIoU_NMS SIoU_NMS Soft-SIoUNMS Soft-CIoUNMS Soft-DIoUNMS Soft-EIoUNMS Soft-GIoUNMS andNMS clusterNMS clusterdiouNMS clusterspmNMS clusterspmdistNMS clusterciouNMS clustereiouNMS
-9更多注意力 GAM NAM S2 SE SU SAM SK CC CBAM CA GAM ECA SE BOT3 RESCBAM BOT ACMIX
+9更多注意力 GAM NAM S2 SE SU SAM SK CC CBAM CA GAM ECA SE BOT3 PN RESCBAM BOT ACMIX
 10更多主干
 BottleneckCSP BottleneckCSPA BottleneckCSPB BottleneckCSPC BottleneckCSP2 BottleneckCSPF BottleneckG BottleneckCSPL BottleneckCSPLG BottleneckCSPSE BottleneckCSPSEA BottleneckCSPSAM BottleneckCSPSAMA  BottleneckCSPSAMB  BottleneckCSPGC  BottleneckCSPDNL BottleneckCSP2SAM InvolutionBottleneck BottleneckCSPTR BottleneckCSP2TR
 ResCSPA ResCSPB ResCSPC ResXCSPA ResXCSPB ResXCSPC RepResXCSPA RepResXCSPB RepResXCSPC RepRes RepResCSPA RepResCSPB RepResCSPC RepBottleneckCSPA RepBottleneckCSPB RepBottleneckCSPC 
