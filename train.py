@@ -490,10 +490,10 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 def parse_opt(known=False):
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', type=str, default=ROOT / 'yolov5n.pt', help='initial weights path')
-    parser.add_argument('--cfg', type=str, default='configs/attention/yolov5n_GAMAttention.yaml', help='model.yaml path')
+    parser.add_argument('--cfg', type=str, default='', help='model.yaml path')
     parser.add_argument('--data', type=str, default=ROOT / 'data/coco128.yaml', help='dataset.yaml path')
     parser.add_argument('--hyp', type=str, default=ROOT / 'data/hyps/hyp.scratch-low.yaml', help='hyperparameters path')
-    parser.add_argument('--epochs', type=int, default=100)
+    parser.add_argument('--epochs', type=int, default=300)
     parser.add_argument('--loss', type=str, default='origin', help='')
     parser.add_argument('--auxotaloss', action='store_true', help='swin not use half to train/Val')
     parser.add_argument('--otaloss', action='store_true', help='swin not use half to train/Val')
