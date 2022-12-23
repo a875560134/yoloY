@@ -105,6 +105,7 @@ class C3(nn.Module):
     def forward(self, x):
         return self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
 
+
 class DetectMultiBackend(nn.Module):
     # YOLOv5 MultiBackend class for python inference on various backends
     def __init__(self, weights='yolov5s.pt', device=torch.device('cpu'), dnn=False, data=None, fp16=False, fuse=True):
@@ -1047,7 +1048,7 @@ class SimConv(nn.Module):
         super().__init__()
         self.conv = nn.Conv2d(c1, c2, k, s, autopad(k, p), groups=g, bias=False)
         self.bn = nn.BatchNorm2d(c2)
-        self.act = nn.ReLU()
+        self.act = nn.SiLU()
 
     def forward(self, x):
         return self.act(self.bn(self.conv(x)))
@@ -1289,7 +1290,7 @@ class BottleneckCSPGC(nn.Module):
         self.m = nn.Sequential(*[Bottleneck(c_, c_, shortcut, g, e=1.0) for _ in range(n)])
 
         self.channel_add_conv = nn.Sequential(nn.Conv2d(c2, c2, kernel_size=1), nn.LayerNorm([c2, 1, 1]),
-                                              nn.ReLU(inplace=True),  # yapf: disable
+                                              nn.SiLU(inplace=True),  # yapf: disable
                                               nn.Conv2d(c2, c2, kernel_size=1))
 
         self.conv_mask = nn.Conv2d(c2, 1, kernel_size=1)
@@ -1533,7 +1534,7 @@ class GC(nn.Module):
 
         #
         self.channel_add_conv = nn.Sequential(nn.Conv2d(c1, c_, kernel_size=1), nn.LayerNorm([c_, 1, 1]),
-                                              nn.ReLU(inplace=True),  # yapf: disable
+                                              nn.SiLU(inplace=True),  # yapf: disable
                                               nn.Conv2d(c_, c1, kernel_size=1))
 
         self.conv_mask = nn.Conv2d(c_, 1, kernel_size=1)
@@ -2421,7 +2422,7 @@ class Concat_bifpn(nn.Module):
         # self.w3 = nn.Parameter(torch.ones(3, dtype=torch.float32), requires_grad=True)
         self.epsilon = 0.0001
         self.conv = Conv(c1, c2, 1, 1, 0)
-        self.act = nn.ReLU()
+        self.act = nn.SiLU()
 
     def forward(self, x):  # mutil-layer 1-3 layers #ADD or Concat
         # print("bifpn:",x.shape)
@@ -2477,18 +2478,18 @@ class ShuffleNetV2(nn.Module):
                                      nn.BatchNorm2d(c1),
                                      nn.Conv2d(c1, branch_features, kernel_size=1, bias=False),
                                      nn.BatchNorm2d(branch_features),
-                                     nn.ReLU(
+                                     nn.SiLU(
                                          inplace=True)) if self.stride == 2 else nn.Sequential()  # 如果步长是2 ，没有通道split
 
         self.branch2 = nn.Sequential(
             nn.Conv2d(c1 if (self.stride == 2) else branch_features, branch_features, kernel_size=1,
-                      bias=False), nn.BatchNorm2d(branch_features), nn.ReLU(inplace=True),
+                      bias=False), nn.BatchNorm2d(branch_features), nn.SiLU(inplace=True),
 
             nn.Conv2d(branch_features, branch_features, kernel_size=3, stride=self.stride, padding=1,
                       groups=branch_features), nn.BatchNorm2d(branch_features),
 
             nn.Conv2d(branch_features, branch_features, kernel_size=1, bias=False),
-            nn.BatchNorm2d(branch_features), nn.ReLU(inplace=True), )
+            nn.BatchNorm2d(branch_features), nn.SiLU(inplace=True), )
 
     def forward(self, x):
         if self.stride == 1:
@@ -2855,7 +2856,7 @@ class ResBlock_CBAM(nn.Module):
             self.downsample = nn.Sequential(
                 nn.Conv2d(in_channels=in_places, out_channels=places * self.expansion, kernel_size=1, stride=stride,
                           bias=False), nn.BatchNorm2d(places * self.expansion))
-        self.relu = nn.ReLU(inplace=True)
+        self.relu = nn.SiLU(inplace=True)
 
     def forward(self, x):
         residual = x
@@ -4350,7 +4351,7 @@ class WindowAttention_v2(nn.Module):
         self.logit_scale = nn.Parameter(torch.log(10 * torch.ones((num_heads, 1, 1))), requires_grad=True)
 
         # mlp to generate continuous relative position bias
-        self.cpb_mlp = nn.Sequential(nn.Linear(2, 512), nn.ReLU(inplace=True),
+        self.cpb_mlp = nn.Sequential(nn.Linear(2, 512), nn.SiLU(inplace=True),
                                      nn.Linear(512, num_heads, bias=False))
 
         # get relative_coords_table
@@ -4866,17 +4867,17 @@ class MobileNetV3_InvertedResidual(nn.Module):
         if inp == hidden_dim:
             self.conv = nn.Sequential(  # dw
                 nn.Conv2d(hidden_dim, hidden_dim, kernel_size, stride, (kernel_size - 1) // 2, groups=hidden_dim,
-                          bias=False), nn.BatchNorm2d(hidden_dim), nn.Hardswish() if use_hs else nn.ReLU(),
+                          bias=False), nn.BatchNorm2d(hidden_dim), nn.Hardswish() if use_hs else nn.SiLU(),
                 # Squeeze-and-Excite
                 SeBlock(hidden_dim) if use_se else nn.Sequential(),  # pw-linear
                 nn.Conv2d(hidden_dim, oup, 1, bias=False), nn.BatchNorm2d(oup), )
         else:
             self.conv = nn.Sequential(  # pw
                 nn.Conv2d(inp, hidden_dim, 1, bias=False), nn.BatchNorm2d(hidden_dim),
-                nn.Hardswish() if use_hs else nn.ReLU(),  # dw
+                nn.Hardswish() if use_hs else nn.SiLU(),  # dw
                 nn.Conv2d(hidden_dim, hidden_dim, kernel_size, stride, (kernel_size - 1) // 2, groups=hidden_dim,
                           bias=False), nn.BatchNorm2d(hidden_dim),  # Squeeze-and-Excite
-                SeBlock(hidden_dim) if use_se else nn.Sequential(), nn.Hardswish() if use_hs else nn.ReLU(),
+                SeBlock(hidden_dim) if use_se else nn.Sequential(), nn.Hardswish() if use_hs else nn.SiLU(),
                 # pw-linear
                 nn.Conv2d(hidden_dim, oup, 1, bias=False), nn.BatchNorm2d(oup), )
 
@@ -4894,7 +4895,7 @@ class Conv_maxpool(nn.Module):
     def __init__(self, c1, c2):  # ch_in, ch_out
         super().__init__()
         self.conv = nn.Sequential(nn.Conv2d(c1, c2, kernel_size=3, stride=2, padding=1, bias=False), nn.BatchNorm2d(c2),
-                                  nn.ReLU(inplace=True), )
+                                  nn.SiLU(inplace=True), )
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
 
     def forward(self, x):
@@ -4915,19 +4916,19 @@ class ShuffleNetV2_Model(nn.Module):
             self.branch1 = nn.Sequential(nn.Conv2d(inp, inp, kernel_size=3, stride=self.stride, padding=1, groups=inp),
                                          nn.BatchNorm2d(inp),
                                          nn.Conv2d(inp, branch_features, kernel_size=1, bias=False),
-                                         nn.BatchNorm2d(branch_features), nn.ReLU(inplace=True))
+                                         nn.BatchNorm2d(branch_features), nn.SiLU(inplace=True))
         else:
             self.branch1 = nn.Sequential()
 
         self.branch2 = nn.Sequential(
             nn.Conv2d(inp if (self.stride == 2) else branch_features, branch_features, kernel_size=1,
-                      bias=False), nn.BatchNorm2d(branch_features), nn.ReLU(inplace=True),
+                      bias=False), nn.BatchNorm2d(branch_features), nn.SiLU(inplace=True),
 
             nn.Conv2d(branch_features, branch_features, kernel_size=3, stride=self.stride, padding=1,
                       groups=branch_features), nn.BatchNorm2d(branch_features),
 
             nn.Conv2d(branch_features, branch_features, kernel_size=1, bias=False),
-            nn.BatchNorm2d(branch_features), nn.ReLU(inplace=True), )
+            nn.BatchNorm2d(branch_features), nn.SiLU(inplace=True), )
 
     def forward(self, x):
         if self.stride == 1:
@@ -4957,7 +4958,7 @@ class ChannelAttention(nn.Module):
         self.max_pool = nn.AdaptiveMaxPool2d(1)
 
         self.fc1 = nn.Conv2d(in_planes, in_planes // ratio, 1, bias=False)
-        self.relu1 = nn.ReLU()
+        self.relu1 = nn.SiLU()
         self.fc2 = nn.Conv2d(in_planes // ratio, in_planes, 1, bias=False)
         self.sigmoid = nn.Sigmoid()
 
@@ -4992,7 +4993,7 @@ class SeBlock(nn.Module):
 
         self.Excitation = nn.Sequential()
         self.Excitation.add_module('FC1', nn.Conv2d(in_channel, in_channel // reduction, kernel_size=1))  # 1*1卷积与此效果相同
-        self.Excitation.add_module('ReLU', nn.ReLU())
+        self.Excitation.add_module('ReLU', nn.SiLU())
         self.Excitation.add_module('FC2', nn.Conv2d(in_channel // reduction, in_channel, kernel_size=1))
         self.Excitation.add_module('Sigmoid', nn.Sigmoid())
 
@@ -5195,13 +5196,13 @@ class ContextBlock2d(nn.Module):
             self.avg_pool = nn.AdaptiveAvgPool2d(1)
         if 'channel_add' in fusions:
             self.channel_add_conv = nn.Sequential(nn.Conv2d(self.inplanes, self.planes, kernel_size=1),
-                                                  nn.LayerNorm([self.planes, 1, 1]), nn.ReLU(inplace=True),
+                                                  nn.LayerNorm([self.planes, 1, 1]), nn.SiLU(inplace=True),
                                                   nn.Conv2d(self.planes, self.inplanes, kernel_size=1))
         else:
             self.channel_add_conv = None
         if 'channel_mul' in fusions:
             self.channel_mul_conv = nn.Sequential(nn.Conv2d(self.inplanes, self.planes, kernel_size=1),
-                                                  nn.LayerNorm([self.planes, 1, 1]), nn.ReLU(inplace=True),
+                                                  nn.LayerNorm([self.planes, 1, 1]), nn.SiLU(inplace=True),
                                                   nn.Conv2d(self.planes, self.inplanes, kernel_size=1))
         else:
             self.channel_mul_conv = None
@@ -5302,7 +5303,7 @@ def conv_bn_relu(in_channels, out_channels, kernel_size, stride, padding, groups
         padding = kernel_size // 2
     result = conv_bn(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, stride=stride,
                      padding=padding, groups=groups)
-    result.add_module('nonlinear', nn.ReLU())
+    result.add_module('nonlinear', nn.SiLU())
     return result
 
 
@@ -5396,7 +5397,7 @@ class RepLKBlock(nn.Module):
         self.large_kernel = ReparamLargeKernelConv(in_channels=dw_channels, out_channels=dw_channels,
                                                    kernel_size=block_lk_size, stride=1, groups=dw_channels,
                                                    small_kernel=small_kernel, small_kernel_merged=small_kernel_merged)
-        self.lk_nonlinear = nn.ReLU()
+        self.lk_nonlinear = nn.SiLU()
         self.prelkb_bn = get_bn(in_channels)
         self.drop_path = DropPath(drop_path) if drop_path > 0. else nn.Identity()  # print('drop path:', self.drop_path)
 
@@ -5592,12 +5593,12 @@ class CoT(nn.Module):
 
         self.key_embed = nn.Sequential(
             nn.Conv2d(dim, dim, kernel_size=kernel_size, padding=kernel_size // 2, groups=4, bias=False),
-            nn.BatchNorm2d(dim), nn.ReLU())
+            nn.BatchNorm2d(dim), nn.SiLU())
         self.value_embed = nn.Sequential(nn.Conv2d(dim, dim, 1, bias=False), nn.BatchNorm2d(dim))
 
         factor = 4
         self.attention_embed = nn.Sequential(nn.Conv2d(2 * dim, 2 * dim // factor, 1, bias=False),
-                                             nn.BatchNorm2d(2 * dim // factor), nn.ReLU(),
+                                             nn.BatchNorm2d(2 * dim // factor), nn.SiLU(),
                                              nn.Conv2d(2 * dim // factor, kernel_size * kernel_size * dim, 1))
 
     def forward(self, x):
@@ -5836,8 +5837,8 @@ class Conv(nn.Module):
         super(Conv, self).__init__()
         self.conv = nn.Conv2d(c1, c2, k, s, autopad(k, p), groups=g, bias=False)
         self.bn = nn.BatchNorm2d(c2)
-        self.act = Hardswish() if act is True else (act if isinstance(act,
-                                                                      nn.Module) else nn.Identity())  # self.act = nn.ReLU(inplace=True)  # self.act = nn.LeakyReLU(0.1, inplace=True) if act else nn.Identity()
+        self.act = nn.SiLU() if act is True else (act if isinstance(act,
+                                                                    nn.Module) else nn.Identity())  # self.act = nn.ReLU(inplace=True)  # self.act = nn.LeakyReLU(0.1, inplace=True) if act else nn.Identity()
 
     def forward(self, x):
         return self.act(self.bn(self.conv(x)))
@@ -5882,7 +5883,7 @@ class SELayer(nn.Module):
     def __init__(self, channel, reduction=4):
         super(SELayer, self).__init__()
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
-        self.fc = nn.Sequential(nn.Linear(channel, channel // reduction), nn.ReLU(inplace=True),
+        self.fc = nn.Sequential(nn.Linear(channel, channel // reduction), nn.SiLU(inplace=True),
                                 nn.Linear(channel // reduction, channel), Hswish())
 
     def forward(self, x):
@@ -5915,7 +5916,7 @@ class conv_bn_relu_maxpool(nn.Module):
     def __init__(self, c1, c2):  # ch_in, ch_out
         super(conv_bn_relu_maxpool, self).__init__()
         self.conv = nn.Sequential(nn.Conv2d(c1, c2, kernel_size=3, stride=2, padding=1, bias=False), nn.BatchNorm2d(c2),
-                                  nn.ReLU(inplace=True), )
+                                  nn.SiLU(inplace=True), )
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
 
     def forward(self, x):
@@ -5937,15 +5938,15 @@ class Shuffle_Block(nn.Module):
             self.branch1 = nn.Sequential(self.depthwise_conv(inp, inp, kernel_size=3, stride=self.stride, padding=1),
                                          nn.BatchNorm2d(inp),
                                          nn.Conv2d(inp, branch_features, kernel_size=1, bias=False),
-                                         nn.BatchNorm2d(branch_features), nn.ReLU(inplace=True), )
+                                         nn.BatchNorm2d(branch_features), nn.SiLU(inplace=True), )
 
         self.branch2 = nn.Sequential(
             nn.Conv2d(inp if (self.stride > 1) else branch_features, branch_features, kernel_size=1,
-                      bias=False), nn.BatchNorm2d(branch_features), nn.ReLU(inplace=True),
+                      bias=False), nn.BatchNorm2d(branch_features), nn.SiLU(inplace=True),
             self.depthwise_conv(branch_features, branch_features, kernel_size=3, stride=self.stride, padding=1),
             nn.BatchNorm2d(branch_features),
             nn.Conv2d(branch_features, branch_features, kernel_size=1, bias=False),
-            nn.BatchNorm2d(branch_features), nn.ReLU(inplace=True), )
+            nn.BatchNorm2d(branch_features), nn.SiLU(inplace=True), )
 
     @staticmethod
     def depthwise_conv(i, o, kernel_size, stride=1, padding=0, bias=False):
@@ -6173,18 +6174,18 @@ class mobilev3_bneck(nn.Module):
         if inp == hidden_dim:
             self.conv = nn.Sequential(  # dw
                 nn.Conv2d(hidden_dim, hidden_dim, kernel_size, stride, (kernel_size - 1) // 2, groups=hidden_dim,
-                          bias=False), nn.BatchNorm2d(hidden_dim), Hswish() if use_hs else nn.ReLU(inplace=True),
+                          bias=False), nn.BatchNorm2d(hidden_dim), Hswish() if use_hs else nn.SiLU(inplace=True),
                 # Squeeze-and-Excite
                 SELayer(hidden_dim) if use_se else nn.Sequential(),  # pw-linear
                 nn.Conv2d(hidden_dim, oup, 1, bias=False), nn.BatchNorm2d(oup), )
         else:
             self.conv = nn.Sequential(nn.Conv2d(inp, hidden_dim, 1, bias=False), nn.BatchNorm2d(hidden_dim),
-                                      Hswish() if use_hs else nn.ReLU(inplace=True),
+                                      Hswish() if use_hs else nn.SiLU(inplace=True),
                                       nn.Conv2d(hidden_dim, hidden_dim, kernel_size, stride, (kernel_size - 1) // 2,
                                                 groups=hidden_dim,
                                                 bias=False), nn.BatchNorm2d(hidden_dim),  # Squeeze-and-Excite
                                       SELayer(hidden_dim) if use_se else nn.Sequential(),
-                                      Hswish() if use_hs else nn.ReLU(inplace=True),
+                                      Hswish() if use_hs else nn.SiLU(inplace=True),
                                       # pw-linear
                                       nn.Conv2d(hidden_dim, oup, 1, bias=False), nn.BatchNorm2d(oup), )
 
@@ -6230,7 +6231,7 @@ class LC_SEModule(nn.Module):
         super().__init__()
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.conv1 = nn.Conv2d(in_channels=channel, out_channels=channel // reduction, kernel_size=1)
-        self.relu = nn.ReLU()
+        self.relu = nn.SiLU()
         self.conv2 = nn.Conv2d(in_channels=channel // reduction, out_channels=channel, kernel_size=1)
         self.SiLU = nn.SiLU()  # self.hardsigmoid = nn.Hardsigmoid()
 
@@ -6296,7 +6297,7 @@ class ES_SEModule(nn.Module):
         super().__init__()
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.conv1 = nn.Conv2d(in_channels=channel, out_channels=channel // reduction, kernel_size=1)
-        self.relu = nn.ReLU()
+        self.relu = nn.SiLU()
         self.conv2 = nn.Conv2d(in_channels=channel // reduction, out_channels=channel, kernel_size=1)
         self.hardsigmoid = nn.Hardsigmoid()
 
@@ -6532,7 +6533,7 @@ class ConvMixer(nn.Module):
                 nn.Sequential(nn.Conv2d(c2, c2, kernel_size, groups=c2, padding=1), nn.GELU(), nn.BatchNorm2d(c2))),
                 nn.Conv2d(c2, c1, kernel_size=1), nn.GELU(), nn.BatchNorm2d(c2)) for _ in range(depth)])
         self.avg_pool = torch.nn.AdaptiveAvgPool2d(1)
-        self.fc = nn.Sequential(nn.Linear(c2, c2 // reduction, bias=False), nn.ReLU(inplace=True),
+        self.fc = nn.Sequential(nn.Linear(c2, c2 // reduction, bias=False), nn.SiLU(inplace=True),
                                 nn.Linear(c2 // reduction, c2, bias=False), nn.Sigmoid())
 
     def forward(self, x):
@@ -6558,7 +6559,7 @@ class SEAM(nn.Module):
                 nn.Conv2d(in_channels=c2, out_channels=c2, kernel_size=1), nn.GELU(),
                 nn.BatchNorm2d(c2)) for _ in range(n)])
         self.avg_pool = torch.nn.AdaptiveAvgPool2d(1)
-        self.fc = nn.Sequential(nn.Linear(c2, c2 // reduction, bias=False), nn.ReLU(inplace=True),
+        self.fc = nn.Sequential(nn.Linear(c2, c2 // reduction, bias=False), nn.SiLU(inplace=True),
                                 nn.Linear(c2 // reduction, c2, bias=False), nn.Sigmoid())
 
     def forward(self, x):
@@ -6592,7 +6593,7 @@ class MultiSEAM(nn.Module):
         self.DCovN1 = DcovN(c1, c2, depth, kernel_size=kernel_size, patch_size=patch_size[1])
         self.DCovN2 = DcovN(c1, c2, depth, kernel_size=kernel_size, patch_size=patch_size[2])
         self.avg_pool = torch.nn.AdaptiveAvgPool2d(1)
-        self.fc = nn.Sequential(nn.Linear(c2, c2 // reduction, bias=False), nn.ReLU(inplace=True),
+        self.fc = nn.Sequential(nn.Linear(c2, c2 // reduction, bias=False), nn.SiLU(inplace=True),
                                 nn.Linear(c2 // reduction, c2, bias=False), nn.Sigmoid())
 
     def forward(self, x):
@@ -6910,7 +6911,7 @@ class GAMAttention(nn.Module):
     def __init__(self, c1, c2, group=True, rate=8):
         super(GAMAttention, self).__init__()
 
-        self.channel_attention = nn.Sequential(nn.Linear(c1, int(c1 / rate)), nn.ReLU(inplace=True),
+        self.channel_attention = nn.Sequential(nn.Linear(c1, int(c1 / rate)), nn.SiLU(inplace=True),
                                                nn.Linear(int(c1 / rate), c1))
         self.spatial_attention = nn.Sequential(
             nn.Conv2d(c1, c1 // rate, kernel_size=7, padding=3, groups=rate) if group else nn.Conv2d(c1, int(c1 / rate),
@@ -7784,36 +7785,34 @@ class BasicConv(nn.Module):
             x = self.relu(x)
         return x
 
-
 class BasicRFB(nn.Module):
 
-    def __init__(self, in_planes, out_planes, stride=1, scale=0.1, map_reduce=8, vision=1, groups=1):
+    def __init__(self, in_planes, out_planes, stride=1, scale=1.0, map_reduce=8, vision=1, groups=1):
         super(BasicRFB, self).__init__()
         self.scale = scale
         self.out_channels = out_planes
         inter_planes = in_planes // map_reduce
 
         self.branch0 = nn.Sequential(
-            BasicConv(in_planes, inter_planes, kernel_size=1, groups=groups, relu=False),
+            BasicConv(in_planes, inter_planes, kernel_size=1, stride=1, groups=groups, relu=False),
             BasicConv(inter_planes, 2 * inter_planes, kernel_size=(3, 3), stride=stride, padding=(1, 1), groups=groups),
-            BasicConv(2 * inter_planes, 2 * inter_planes, kernel_size=3, padding=vision + 1, dilation=vision + 1,
-                      relu=False, groups=groups))
+            BasicConv(2 * inter_planes, 2 * inter_planes, kernel_size=3, stride=1, padding=vision + 1, dilation=vision + 1, relu=False, groups=groups)
+        )
         self.branch1 = nn.Sequential(
-            BasicConv(in_planes, inter_planes, kernel_size=1, groups=groups, relu=False),
+            BasicConv(in_planes, inter_planes, kernel_size=1, stride=1, groups=groups, relu=False),
             BasicConv(inter_planes, 2 * inter_planes, kernel_size=(3, 3), stride=stride, padding=(1, 1), groups=groups),
-            BasicConv(2 * inter_planes, 2 * inter_planes, kernel_size=3, padding=vision + 2, dilation=vision + 2,
-                      relu=False, groups=groups))
+            BasicConv(2 * inter_planes, 2 * inter_planes, kernel_size=3, stride=1, padding=vision + 2, dilation=vision + 2, relu=False, groups=groups)
+        )
         self.branch2 = nn.Sequential(
-            BasicConv(in_planes, inter_planes, kernel_size=1, groups=groups, relu=False),
-            BasicConv(inter_planes, (inter_planes // 2) * 3, kernel_size=3, padding=1, groups=groups),
-            BasicConv((inter_planes // 2) * 3, 2 * inter_planes, kernel_size=3, stride=stride, padding=1,
-                      groups=groups),
-            BasicConv(2 * inter_planes, 2 * inter_planes, kernel_size=3, padding=vision + 4, dilation=vision + 4,
-                      relu=False, groups=groups))
+            BasicConv(in_planes, inter_planes, kernel_size=1, stride=1, groups=groups, relu=False),
+            BasicConv(inter_planes, (inter_planes // 2) * 3, kernel_size=3, stride=1, padding=1, groups=groups),
+            BasicConv((inter_planes // 2) * 3, 2 * inter_planes, kernel_size=3, stride=stride, padding=1, groups=groups),
+            BasicConv(2 * inter_planes, 2 * inter_planes, kernel_size=3, stride=1, padding=vision + 4, dilation=vision + 4, relu=False, groups=groups)
+        )
 
-        self.ConvLinear = BasicConv(6 * inter_planes, out_planes, kernel_size=1, relu=False)
+        self.ConvLinear = BasicConv(6 * inter_planes, out_planes, kernel_size=1, stride=1, relu=False)
         self.shortcut = BasicConv(in_planes, out_planes, kernel_size=1, stride=stride, relu=False)
-        self.relu = nn.ReLU()
+        self.relu = nn.SiLU(inplace=False)
 
     def forward(self, x):
         x0 = self.branch0(x)
@@ -8161,4 +8160,3 @@ class Ensemble(nn.ModuleList):
         # y = torch.stack(y).mean(0)  # mean ensemble
         y = torch.cat(y, 1)  # nms ensemble
         return y, None  # inference, train output
-
