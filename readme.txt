@@ -5,11 +5,11 @@ YOLOY：23错误 492警告 1074弱警告 28语法错误
 基于原始YOLOv5-6.2加入了大量的改进方法：
 1更多激活函数 Hard_Swish leaky_relu linspace gelu lrelu Hard_Sigmoid relu Squareplus selu elu sigmoid softmax softplus softsign step_function tanh SiLU Mish FReLU AconC MetaAconC celu glu hardshrink hardtanh prelu rrelu softmin softsign tanhshrink
 2更多数据增强 通道丢弃 像素丢弃 CLAHE HE 压缩 均值模糊 中值模糊 高斯模糊 棱镜模糊 运动模糊 超像素 下采样 ISO噪声 高斯噪声 乘性噪声 浮雕 锐化 USM 过曝 随机亮度对比度 随机色调 灰度化 褐色化 随机伽玛 RGB变换 色调分离 通道随机化 BCS变换 PCA变换 HSV变换 随机90度旋转
-3更多卷积 conv CrossConv DWConv Conv6 DepthWiseConv PointWiseConv ConvSig ConvSqu deconv simconv gnconv RepConv XBNConv ghostconv
+3更多卷积 conv crossconv robustconv robustconv2 dwconv conv6 pwconv convsig convsqu simconv gnconv repconv xbnconv ghostconv
 4更多池化 simsppf spp aspp RFB sppcspc sppcspcgroup
 5更多检测头 ASFF Decoupled IDetect IAuxDetect DetectX DetectYoloX IBin MT
-6更多fpn bifpn affpn carafe panet elandpn
-7更多loss函数 focalloss Qfocalloss vfocalloss gfocalloss efocalloss giouloss diouloss ciouloss eiouloss siouloss aiouloss
+6更多fpn bifpn affpn carafe panet elandpn deconvfpn
+7更多loss函数 focalloss qfocalloss vfocalloss gfocalloss efocalloss giouloss diouloss ciouloss eiouloss siouloss aiouloss
 8更多NMS Merge-NMS Soft-NMS CIoU_NMS DIoU_NMS GIoU_NMS EIoU_NMS SIoU_NMS Soft-SIoUNMS Soft-CIoUNMS Soft-DIoUNMS Soft-EIoUNMS Soft-GIoUNMS andNMS clusterNMS clusterdiouNMS clusterspmNMS clusterspmdistNMS clusterciouNMS clustereiouNMS
 9更多注意力 GAM NAM SAM S2 SU SK CC CA ECA SE BOT PN CBAM ACMIX COT
 10更多主干
