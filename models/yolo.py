@@ -344,7 +344,7 @@ def parse_model(d, ch):  # model_dict, input_channels(3)
                 pass
 
         n = n_ = max(round(n * gd), 1) if n > 1 else n  # depth gain
-        if m in [Conv, CrossConv, DWConv, Conv6, DepthWiseConv, PointWiseConv, ConvSig, ConvSqu, RepConv, XBNConv,
+        if m in [Conv, CrossConv, DWConv, Conv6, DepthWiseConv, PointWiseConv, ConvSig, ConvSqu, RepConv, XBNConv, RobustConv, RobustConv2,
                  GhostConv, RepConv_OREPA, DepthSepConv, SimConv, CTR3,
                  SPP, SPPF, ASPP, CARAFE, SimSPPF, ECA, SE,ParNetAttention,
                  BottleneckCSP, BottleneckCSPA, BottleneckCSPB, BottleneckCSPC, BottleneckCSP2, BottleneckCSPF,
