@@ -8160,3 +8160,37 @@ class Ensemble(nn.ModuleList):
         # y = torch.stack(y).mean(0)  # mean ensemble
         y = torch.cat(y, 1)  # nms ensemble
         return y, None  # inference, train output
+
+class RobustConv(nn.Module):
+    # Robust convolution (use high kernel size 7-11 for: downsampling and other layers). Train for 300 - 450 epochs.
+    def __init__(self, c1, c2, k=7, s=1, p=None, g=1, act=True,
+                 layer_scale_init_value=1e-6):  # ch_in, ch_out, kernel, stride, padding, groups
+        super(RobustConv, self).__init__()
+        self.conv_dw = Conv(c1, c1, k=k, s=s, p=p, g=c1, act=act)
+        self.conv1x1 = nn.Conv2d(c1, c2, 1, 1, 0, groups=1, bias=True)
+        self.gamma = nn.Parameter(layer_scale_init_value * torch.ones(c2)) if layer_scale_init_value > 0 else None
+
+    def forward(self, x):
+        x = x.to(memory_format=torch.channels_last)
+        x = self.conv1x1(self.conv_dw(x))
+        if self.gamma is not None:
+            x = x.mul(self.gamma.reshape(1, -1, 1, 1))
+        return x
+
+
+class RobustConv2(nn.Module):
+    # Robust convolution 2 (use [32, 5, 2] or [32, 7, 4] or [32, 11, 8] for one of the paths in CSP).
+    def __init__(self, c1, c2, k=7, s=4, p=None, g=1, act=True,
+                 layer_scale_init_value=1e-6):  # ch_in, ch_out, kernel, stride, padding, groups
+        super(RobustConv2, self).__init__()
+        self.conv_strided = Conv(c1, c1, k=k, s=s, p=p, g=c1, act=act)
+        self.conv_deconv = nn.ConvTranspose2d(in_channels=c1, out_channels=c2, kernel_size=s, stride=s,
+                                              padding=0, bias=True, dilation=1, groups=1
+                                              )
+        self.gamma = nn.Parameter(layer_scale_init_value * torch.ones(c2)) if layer_scale_init_value > 0 else None
+
+    def forward(self, x):
+        x = self.conv_deconv(self.conv_strided(x))
+        if self.gamma is not None:
+            x = x.mul(self.gamma.reshape(1, -1, 1, 1))
+        return x
