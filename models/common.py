@@ -90,6 +90,42 @@ class ParNetAttention(nn.Module):
         y = self.silu(x1 + x2 + x3)
         return y
 
+class SPPFCSPC(nn.Module):
+    # 本代码由YOLOAir目标检测交流群 心动 大佬贡献
+    def __init__(self, c1, c2, n=1, shortcut=False, g=1, e=0.5, k=3):
+        super(SPPFCSPC, self).__init__()
+        c_ = int(2 * c2 * e)  # hidden channels
+        self.cv1 = Conv(c1, c_, 1, 1)
+        self.cv2 = Conv(c1, c_, 1, 1)
+        self.cv3 = Conv(c_, c_, 3, 1)
+        self.cv4 = Conv(c_, c_, 1, 1)
+        self.m = nn.MaxPool2d(kernel_size=k, stride=1, padding=k // 2)
+        self.cv5 = Conv(4 * c_, c_, 1, 1)
+        self.cv6 = Conv(c_, c_, 3, 1)
+        self.cv7 = Conv(2 * c_, c2, 1, 1)
+
+    def forward(self, x):
+        x1 = self.cv4(self.cv3(self.cv1(x)))
+        x2 = self.m(x1)
+        x3 = self.m(x2)
+        y1 = self.cv6(self.cv5(torch.cat((x1, x2, x3, self.m(x3)), 1)))
+        y2 = self.cv2(x)
+        return self.cv7(torch.cat((y1, y2), dim=1))
+
+
+class GhostSPPFCSPC(SPPFCSPC):
+    def __init__(self, c1, c2, n=1, shortcut=False, g=1, e=0.5, k=5):
+        super().__init__(c1, c2, n, shortcut, g, e, k)
+        c_ = int(2 * c2 * e)  # hidden channels
+        self.cv1 = GhostConv(c1, c_, 1, 1)
+        self.cv2 = GhostConv(c1, c_, 1, 1)
+        self.cv3 = GhostConv(c_, c_, 3, 1)
+        self.cv4 = GhostConv(c_, c_, 1, 1)
+        self.m = nn.MaxPool2d(kernel_size=k, stride=1, padding=k // 2)
+        self.cv5 = GhostConv(4 * c_, c_, 1, 1)
+        self.cv6 = GhostConv(c_, c_, 3, 1)
+        self.cv7 = GhostConv(2 * c_, c2, 1, 1)
+
 
 class C3(nn.Module):
     # CSP Bottleneck with 3 convolutions
