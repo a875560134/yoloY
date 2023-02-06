@@ -345,7 +345,7 @@ def parse_model(d, ch):  # model_dict, input_channels(3)
 
         n = n_ = max(round(n * gd), 1) if n > 1 else n  # depth gain
         if m in [Conv, CrossConv, DWConv, Conv6, DepthWiseConv, PointWiseConv, ConvSig, ConvSqu, RepConv, XBNConv, RobustConv, RobustConv2,
-                 GhostConv, RepConv_OREPA, DepthSepConv, SimConv, CTR3,
+                 GhostConv, RepConv_OREPA, DepthSepConv, SimConv, CTR3, C2f, GhostSPPCSPC, SPPFCSPC,
                  SPP, SPPF, ASPP, CARAFE, SimSPPF, ECA, SE,ParNetAttention,
                  BottleneckCSP, BottleneckCSPA, BottleneckCSPB, BottleneckCSPC, BottleneckCSP2, BottleneckCSPF,
                  BottleneckG, BottleneckCSPL, BottleneckCSPLG, BottleneckCSPSE, BottleneckCSPSEA, BottleneckCSPSAM,
@@ -375,7 +375,7 @@ def parse_model(d, ch):  # model_dict, input_channels(3)
             if m in [BottleneckCSP, BottleneckCSPA, BottleneckCSPB, BottleneckCSPC, BottleneckCSP2, BottleneckCSPF,
                      BottleneckG, BottleneckCSPL, BottleneckCSPLG, BottleneckCSPSE, BottleneckCSPSEA, BottleneckCSPSAM,
                      BottleneckCSPSAMA, BottleneckCSPSAMB, BottleneckCSPGC, BottleneckCSPDNL, BottleneckCSPTR,
-                     BottleneckCSP2TR, CTR3,
+                     BottleneckCSP2TR, CTR3, C2f, GhostSPPCSPC, SPPFCSPC,
                      BottleneckCSP2SAM, InvolutionBottleneck,
                      ResCSPA, ResCSPB, ResCSPC, ResXCSPA, ResXCSPB, ResXCSPC, RepResXCSPA, RepResXCSPB, RepResXCSPC,
                      RepResCSPA, RepResCSPB, RepResCSPC, GhostCSPA, GhostCSPB, GhostCSPC, GhostSPPCSPC, GhostBottleneck,
